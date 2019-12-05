@@ -39,8 +39,8 @@ const fetchISSFlyOverTimes = (coords, callback) => {
         const msg = `Status Code ${res.statusCode} when fetching ISS fly over times. Response: ${body}`;
         callback(Error(msg), null);
       } else {
-        const data = JSON.parse(body).response;
-        callback(null, data);
+        const data = JSON.parse(body);
+        callback(null, data.response);
       }
     }
   );
@@ -49,18 +49,15 @@ const fetchISSFlyOverTimes = (coords, callback) => {
 const nextISSTimesForMyLocation = callback => {
   fetchMyIP((error, ip) => {
     if (error) {
-      console.log("It didn't work", error);
-      return;
+      return callback(error, null);
     }
     fetchCoordsByIP(`${ip}`, (err, data) => {
       if (err) {
-        console.log(err);
-        return;
+        return callback(err, null);
       }
       fetchISSFlyOverTimes(data, (err, timesData) => {
         if (err) {
-          console.log(err);
-          return;
+          return callback(err, null);
         }
         callback(null, timesData);
       });
@@ -69,8 +66,5 @@ const nextISSTimesForMyLocation = callback => {
 };
 
 module.exports = {
-  fetchMyIP,
-  fetchCoordsByIP,
-  fetchISSFlyOverTimes,
   nextISSTimesForMyLocation
 };
